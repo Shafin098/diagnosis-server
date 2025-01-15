@@ -5,15 +5,84 @@ from tensorflow import keras
 from PIL import Image
 import tensorflow as tf
 
-# Constants
-MODEL_PATH = './model.keras'
+import requests
+import re
+from urllib.parse import parse_qs, urlparse
+import requests
+from bs4 import BeautifulSoup
+import os
+
+
+def download_file_from_google_drive(url, output_path=None):
+    """
+    Download a public file from Google Drive using its URL.
+
+    Args:
+        url (str): The Google Drive file URL
+        output_path (str, optional): Path where the file should be saved.
+            If not provided, saves in current directory with original filename.
+
+    Returns:
+        str: Path to the downloaded file
+
+    Raises:
+        ValueError: If the URL is invalid or file is not publicly accessible
+        ConnectionError: If there are network issues
+        IOError: If there are issues writing the file
+    """
+    try:
+        if 'drive.google.com' not in url:
+            raise ValueError("Not a valid Google Drive URL")
+
+        if '/file/d/' in url:
+            file_id = url.split('/file/d/')[1].split('/')[0]
+        elif 'id=' in url:
+            parsed = urlparse(url)
+            file_id = parse_qs(parsed.query)['id'][0]
+        else:
+            raise ValueError("Could not extract file ID from URL")
+
+        download_url = f"https://drive.google.com/uc?id={file_id}"
+        session = requests.Session()
+
+        response = session.get(download_url, stream=True)
+        response.raise_for_status()
+
+        if "login.google.com" in response.url:
+            raise ValueError("File is not publicly accessible")
+
+        if 'content-disposition' in response.headers:
+            filename = re.findall("filename=(.+)",
+                                  response.headers['content-disposition'])[0]
+        else:
+            filename = f"gdrive_file_{file_id}"
+
+        if output_path is None:
+            output_path = filename.strip('"')
+
+        total_size = int(response.headers.get('content-length', 0))
+        block_size = 1024  # 1 KB
+
+        with open(output_path, 'wb') as f:
+            for data in response.iter_content(block_size):
+                f.write(data)
+
+        return output_path
+
+    except requests.exceptions.RequestException as e:
+        raise ConnectionError(f"Network error occurred: {str(e)}")
+    except IOError as e:
+        raise IOError(f"Error writing file: {str(e)}")
+    except Exception as e:
+        raise Exception(f"An unexpected error occurred: {str(e)}")
+
+
+MODEL_PATH = 'model.keras'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-# Page config
 st.set_page_config(
     page_title="Medical Disease Classification System", layout="wide")
 
-# Custom CSS
 st.markdown("""
     <style>
     /* Main container styling */
@@ -120,6 +189,33 @@ def preprocess_image(image, target_size=(224, 224)):
 @st.cache_resource
 def load_model():
     try:
+        url = "https://drive.google.com/file/d/1zU1Nqd0KaOR5Hn-e6LTeU4Dd0XUWDX4W/view?usp=drive_link"
+        try:
+            file_path = download_file_from_google_drive(url)
+            print(f"File downloaded successfully to: {file_path}")
+            with open(file_path, 'r') as file:
+                html_content = file.read()
+                # print(html_content)
+
+                soup = BeautifulSoup(html_content, 'html.parser')
+
+                form = soup.find('form')
+                action_url = form['action']
+                data = {input_tag['name']: input_tag['value'] for input_tag in form.find_all(
+                    'input') if input_tag.get('name')}
+
+                response = requests.get(action_url, params=data)
+
+                if response.status_code == 200:
+                    with open(MODEL_PATH, 'wb') as file:
+                        file.write(response.content)
+                    print("File downloaded successfully!")
+                else:
+                    print(
+                        f"Failed to download. Status code: {response.status_code}")
+
+        except Exception as e:
+            print(f"Error: {e}")
         model = keras.models.load_model(MODEL_PATH)
         return model
     except Exception as e:
