@@ -10,6 +10,7 @@ import re
 from urllib.parse import parse_qs, urlparse
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
 import os
 
 
@@ -85,13 +86,11 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* Main container styling */
     .main {
         background-color: #f8fafc;
         padding: 2rem;
     }
-    
-    /* Header styling */
+
     .stTitle {
         color: #1e293b;
         font-size: 2.5rem !important;
@@ -99,17 +98,15 @@ st.markdown("""
         text-align: center;
         margin-bottom: 1rem !important;
     }
-    
+
     .subtitle {
         color: #475569;
         font-size: 1.1rem;
         text-align: center;
-        max-width: 600px;
         margin: 0 auto;
         line-height: 1.6;
     }
-    
-    /* Disease tags styling */
+
     .disease-tags {
         display: flex;
         flex-wrap: wrap;
@@ -117,7 +114,7 @@ st.markdown("""
         justify-content: center;
         margin: 1.5rem 0;
     }
-    
+
     .disease-tag {
         background-color: #e2e8f0;
         padding: 0.8rem 1.5rem;
@@ -126,16 +123,15 @@ st.markdown("""
         min-width: 120px;
         text-align: center;
     }
-    
-    /* Results styling */
+
     .result-card {
         background-color: white;
         padding: 1.5rem;
         border-radius: 12px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        margin-top: 2rem;
+        margin: 2rem;
     }
-    
+
     .accuracy-bar {
         height: 8px;
         background-color: #e2e8f0;
@@ -143,7 +139,7 @@ st.markdown("""
         margin: 1rem 0;
         overflow: hidden;
     }
-    
+
     .accuracy-fill {
         height: 100%;
         background-color: #2563eb;
@@ -226,9 +222,12 @@ def load_model():
 
 
 def main():
-    st.markdown('<h1 class="stTitle">Medical Disease Classification System</h1>',
+    st.logo("swe.png")
+    st.markdown("""<h1 class="stTitle">
+                    Medical Disease Classification System
+                </h1>""",
                 unsafe_allow_html=True)
-    st.markdown('<h3 class="stTitle">Advanced AI-powered system for identifying and classifying various skin conditions. Upload or capture an image for instant analysis.</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="subtitle">Advanced AI-powered system for identifying and classifying various skin conditions. Upload or capture an image for instant analysis.</h3>', unsafe_allow_html=True)
 
     diseases = ['Chickenpox', 'Cowpox',
                 'HFMD', 'Healthy', 'Measles', 'Monkeypox']
@@ -318,6 +317,8 @@ def main():
 
         except Exception as e:
             st.error(f"Error processing image: {str(e)}")
+    st.markdown(
+        f"""<p class="subtitle">© {datetime.now().year} Daffodil International University, Department of Software Engineering. All rights reserved</p>""", unsafe_allow_html=True)
 
 
 if __name__ == '__main__':
