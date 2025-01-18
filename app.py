@@ -93,7 +93,7 @@ st.markdown("""
 
     .stTitle {
         color: #1e293b;
-        font-size: 2.5rem !important;
+        font-size: 1.5rem !important;
         font-weight: 700 !important;
         text-align: center;
         margin-bottom: 1rem !important;
@@ -223,18 +223,18 @@ def load_model():
 
 def main():
     st.logo("swe.png")
-    st.markdown("""<h1 class="stTitle">
-                    Medical Disease Classification System
-                </h1>""",
+    st.markdown("""<h3 class="stTitle">
+                    Monkeypox Disease Classification System
+                </h3>""",
                 unsafe_allow_html=True)
-    st.markdown('<h3 class="subtitle">Advanced AI-powered system for identifying and classifying various skin conditions. Upload or capture an image for instant analysis.</h3>', unsafe_allow_html=True)
+    # st.markdown('<h3 class="subtitle">Advanced AI-powered system for identifying and classifying various skin conditions. Upload or capture an image for instant analysis.</h3>', unsafe_allow_html=True)
 
     diseases = ['Chickenpox', 'Cowpox',
                 'HFMD', 'Healthy', 'Measles', 'Monkeypox']
     disease_tags = '<div class="disease-tags">' + \
         ''.join(
             [f'<span class="disease-tag">{disease}</span>' for disease in diseases]) + '</div>'
-    st.markdown(disease_tags, unsafe_allow_html=True)
+    # st.markdown(disease_tags, unsafe_allow_html=True)
 
     model = load_model()
 
@@ -245,24 +245,24 @@ def main():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("""
-            <div style='text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.12);'>
-                <i class="fas fa-upload" style='font-size: 2.5rem; color: #2563eb;'></i>
-                <h3 style='font-size: 1.2rem; margin: 1rem 0;'>Upload Image</h3>
-                <p style='color: #475569;'>Select an image from your device</p>
-            </div>
-        """, unsafe_allow_html=True)
+        # st.markdown("""
+        #     <div style='text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.12);'>
+        #         <i class="fas fa-upload" style='font-size: 2.5rem; color: #2563eb;'></i>
+        #         <h3 style='font-size: 1.2rem; margin: 1rem 0;'>Upload Image</h3>
+        #         <p style='color: #475569;'>Select an image from your device</p>
+        #     </div>
+        # """, unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Choose an image file", type=list(
             ALLOWED_EXTENSIONS), key="file_uploader", label_visibility="collapsed")
 
     with col2:
-        st.markdown("""
-            <div style='text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.12);'>
-                <i class="fas fa-camera" style='font-size: 2.5rem; color: #2563eb;'></i>
-                <h3 style='font-size: 1.2rem; margin: 1rem 0;'>Take Photo</h3>
-                <p style='color: #475569;'>Use your device's camera</p>
-            </div>
-        """, unsafe_allow_html=True)
+        # st.markdown("""
+        #     <div style='text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.12);'>
+        #         <i class="fas fa-camera" style='font-size: 2.5rem; color: #2563eb;'></i>
+        #         <h3 style='font-size: 1.2rem; margin: 1rem 0;'>Take Photo</h3>
+        #         <p style='color: #475569;'>Use your device's camera</p>
+        #     </div>
+        # """, unsafe_allow_html=True)
         camera_photo = st.camera_input(
             "Take a photo", label_visibility="collapsed")
 
